@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from ml_training.prepare import prepare_from_config
 from ml_training.train import train_from_config
 
 
@@ -23,10 +24,16 @@ def _write_tiny_dataset(path: Path) -> None:
     pd.DataFrame(rows).to_csv(path, index=False)
 
 
-def _base_config(data_path: Path, model_path: Path, metrics_path: Path) -> dict:
+def _base_config(tmp_path: Path) -> dict:
+    raw = tmp_path / "raw.csv"
+    _write_tiny_dataset(raw)
     return {
         "task": {"name": "transaction_fraud", "target": "is_fraud"},
-        "data": {"raw_path": str(data_path)},
+        "data": {
+            "raw_path": str(raw),
+            "train_path": str(tmp_path / "train.csv"),
+            "val_path": str(tmp_path / "val.csv"),
+        },
         "features": [
             "amount",
             "hour_of_day",
@@ -41,31 +48,26 @@ def _base_config(data_path: Path, model_path: Path, metrics_path: Path) -> dict:
             "type": "logistic_regression",
             "params": {"max_iter": 1000, "C": 1.0},
         },
-        "metrics": {
-            "primary": "roc_auc",
-            "primary_direction": "maximize",
-            "report_path": str(metrics_path),
-        },
-        "paths": {"model_path": str(model_path)},
+        "paths": {"model_path": str(tmp_path / "model.joblib")},
     }
 
 
-def test_same_seed_same_metrics(tmp_path: Path) -> None:
-    data_path = tmp_path / "tiny.csv"
-    model_a = tmp_path / "model_a.joblib"
-    model_b = tmp_path / "model_b.joblib"
-    metrics_a = tmp_path / "metrics_a.json"
-    metrics_b = tmp_path / "metrics_b.json"
-    _write_tiny_dataset(data_path)
+def test_same_seed_same_model_file(tmp_path: Path) -> None:
+    config = _base_config(tmp_path)
+    prepare_from_config(config)
 
-    report_a = train_from_config(_base_config(data_path, model_a, metrics_a))
-    report_b = train_from_config(_base_config(data_path, model_b, metrics_b))
+    path_a = tmp_path / "model_a.joblib"
+    path_b = tmp_path / "model_b.joblib"
 
-    assert report_a["metrics"] == report_b["metrics"]
-    assert model_a.is_file()
-    assert model_b.is_file()
-    assert metrics_a.is_file()
-    assert metrics_b.is_file()
+    config_a = {**config, "paths": {"model_path": str(path_a)}}
+    config_b = {**config, "paths": {"model_path": str(path_b)}}
+
+    train_from_config(config_a)
+    train_from_config(config_b)
+
+    assert path_a.is_file()
+    assert path_b.is_file()
+    assert path_a.read_bytes() == path_b.read_bytes()
 
 
 def test_load_config_roundtrip(tmp_path: Path) -> None:

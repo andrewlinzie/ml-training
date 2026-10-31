@@ -80,3 +80,11 @@ cd ml-training
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+
+## DVC remote
+
+Default remote: `s3://ai-cloud-platform-899631475351-dvc/dvc` (us-east-2).
+
+```bash
+dvc push data/raw/transactions.csv.dvc
+dvc pull data/raw/transactions.csv.dvc

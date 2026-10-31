@@ -1,0 +1,33 @@
+stages:
+  prepare:
+    cmd: python -m ml_training.prepare --config configs/default.yaml
+    deps:
+      - src/ml_training/prepare.py
+      - src/ml_training/config.py
+      - configs/default.yaml
+      - data/raw/transactions.csv
+    outs:
+      - data/processed/train.csv
+      - data/processed/val.csv
+
+  train:
+    cmd: python -m ml_training.train --config configs/default.yaml
+    deps:
+      - src/ml_training/train.py
+      - src/ml_training/config.py
+      - configs/default.yaml
+      - data/processed/train.csv
+    outs:
+      - models/model.joblib
+
+  evaluate:
+    cmd: python -m ml_training.evaluate --config configs/default.yaml
+    deps:
+      - src/ml_training/evaluate.py
+      - src/ml_training/config.py
+      - configs/default.yaml
+      - models/model.joblib
+      - data/processed/val.csv
+    metrics:
+      - metrics/train_metrics.json:
+          cache: false

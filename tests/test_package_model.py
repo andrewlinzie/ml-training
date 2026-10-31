@@ -2,7 +2,9 @@ from pathlib import Path
 
 import pandas as pd
 
+from ml_training.evaluate import evaluate_from_config
 from ml_training.package_model import load_package, package_from_config, predict_one
+from ml_training.prepare import prepare_from_config
 from ml_training.train import train_from_config
 
 
@@ -24,8 +26,8 @@ def _write_tiny_dataset(path: Path) -> None:
 
 
 def test_package_load_and_predict(tmp_path: Path) -> None:
-    data_path = tmp_path / "tiny.csv"
-    _write_tiny_dataset(data_path)
+    raw = tmp_path / "tiny.csv"
+    _write_tiny_dataset(raw)
 
     config = {
         "task": {
@@ -33,7 +35,11 @@ def test_package_load_and_predict(tmp_path: Path) -> None:
             "target": "is_fraud",
             "problem_type": "binary_classification",
         },
-        "data": {"raw_path": str(data_path)},
+        "data": {
+            "raw_path": str(raw),
+            "train_path": str(tmp_path / "train.csv"),
+            "val_path": str(tmp_path / "val.csv"),
+        },
         "features": [
             "amount",
             "hour_of_day",
@@ -59,7 +65,9 @@ def test_package_load_and_predict(tmp_path: Path) -> None:
         },
     }
 
+    prepare_from_config(config)
     train_from_config(config)
+    evaluate_from_config(config)
     metadata = package_from_config(config)
 
     assert metadata["model_version"] != "stub-v1"

@@ -1,0 +1,82 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m ml_training.prepare --config configs/default.yaml
+    deps:
+    - path: configs/default.yaml
+      hash: md5
+      md5: 748c37afe456388e10d7822245da6905
+      size: 687
+    - path: data/raw/transactions.csv
+      hash: md5
+      md5: 20249f87b036b51a3c843fb2c6ce6a8a
+      size: 57717
+    - path: src/ml_training/config.py
+      hash: md5
+      md5: cea151ba9c7cd902d42724a6a8c1e4f1
+      size: 539
+    - path: src/ml_training/prepare.py
+      hash: md5
+      md5: 7e03c661b97b9488e73ce1079fb8e0e5
+      size: 1632
+    outs:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 5f0242ac17b34550efba2f7e8db80043
+      size: 44606
+    - path: data/processed/val.csv
+      hash: md5
+      md5: 785c80dd07a5dddf57bbaf35ffb8f925
+      size: 11194
+  train:
+    cmd: python -m ml_training.train --config configs/default.yaml
+    deps:
+    - path: configs/default.yaml
+      hash: md5
+      md5: 748c37afe456388e10d7822245da6905
+      size: 687
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 5f0242ac17b34550efba2f7e8db80043
+      size: 44606
+    - path: src/ml_training/config.py
+      hash: md5
+      md5: cea151ba9c7cd902d42724a6a8c1e4f1
+      size: 539
+    - path: src/ml_training/train.py
+      hash: md5
+      md5: 64473f045009196cdecbacc1e8942a07
+      size: 1977
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: d4629863d2e1ec53aa9c9de269e5cefd
+      size: 1379
+  evaluate:
+    cmd: python -m ml_training.evaluate --config configs/default.yaml
+    deps:
+    - path: configs/default.yaml
+      hash: md5
+      md5: 748c37afe456388e10d7822245da6905
+      size: 687
+    - path: data/processed/val.csv
+      hash: md5
+      md5: 785c80dd07a5dddf57bbaf35ffb8f925
+      size: 11194
+    - path: models/model.joblib
+      hash: md5
+      md5: d4629863d2e1ec53aa9c9de269e5cefd
+      size: 1379
+    - path: src/ml_training/config.py
+      hash: md5
+      md5: cea151ba9c7cd902d42724a6a8c1e4f1
+      size: 539
+    - path: src/ml_training/evaluate.py
+      hash: md5
+      md5: 206fa518ca55dd8173028dfed0a974f2
+      size: 4394
+    outs:
+    - path: metrics/train_metrics.json
+      hash: md5
+      md5: 9d0e2c57086fa6fae3d1264eccb57b10
+      size: 300
