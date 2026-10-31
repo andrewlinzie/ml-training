@@ -7,13 +7,22 @@ dist/
 build/
 .DS_Store
 
-# data/models stay local until DVC tracks them
+# Ignore raw/processed data blobs, but keep gitkeep + DVC pointers in Git
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/*.dvc
+!data/raw/.gitignore
+
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/*.dvc
+!data/processed/.gitignore
+
+# Ignore model binaries, but allow DVC pointers later
 models/*
 !models/.gitkeep
+!models/**/*.dvc
+!models/**/.gitignore
 
 # DVC local caches / temp (never commit)
 .dvc/cache
