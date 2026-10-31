@@ -5,20 +5,26 @@ stages:
     deps:
     - path: configs/default.yaml
       hash: md5
-      md5: 748c37afe456388e10d7822245da6905
-      size: 687
+      md5: 5b8c858da1f274be0a99733fc128cc81
+      size: 491
     - path: data/raw/transactions.csv
       hash: md5
       md5: 20249f87b036b51a3c843fb2c6ce6a8a
       size: 57717
     - path: src/ml_training/config.py
       hash: md5
-      md5: cea151ba9c7cd902d42724a6a8c1e4f1
-      size: 539
+      md5: 8b90ca320d1845604ac8939a9f268cbe
+      size: 1684
     - path: src/ml_training/prepare.py
       hash: md5
       md5: 7e03c661b97b9488e73ce1079fb8e0e5
       size: 1632
+    params:
+      params.yaml:
+        prepare:
+          test_size: 0.2
+          random_state: 42
+          stratify: true
     outs:
     - path: data/processed/train.csv
       hash: md5
@@ -33,20 +39,29 @@ stages:
     deps:
     - path: configs/default.yaml
       hash: md5
-      md5: 748c37afe456388e10d7822245da6905
-      size: 687
+      md5: 5b8c858da1f274be0a99733fc128cc81
+      size: 491
     - path: data/processed/train.csv
       hash: md5
       md5: 5f0242ac17b34550efba2f7e8db80043
       size: 44606
     - path: src/ml_training/config.py
       hash: md5
-      md5: cea151ba9c7cd902d42724a6a8c1e4f1
-      size: 539
+      md5: 8b90ca320d1845604ac8939a9f268cbe
+      size: 1684
     - path: src/ml_training/train.py
       hash: md5
       md5: 64473f045009196cdecbacc1e8942a07
       size: 1977
+    params:
+      params.yaml:
+        train:
+          seed: 42
+          model:
+            type: logistic_regression
+            params:
+              max_iter: 1000
+              C: 1.0
     outs:
     - path: models/model.joblib
       hash: md5
@@ -57,8 +72,8 @@ stages:
     deps:
     - path: configs/default.yaml
       hash: md5
-      md5: 748c37afe456388e10d7822245da6905
-      size: 687
+      md5: 5b8c858da1f274be0a99733fc128cc81
+      size: 491
     - path: data/processed/val.csv
       hash: md5
       md5: 785c80dd07a5dddf57bbaf35ffb8f925
@@ -69,12 +84,18 @@ stages:
       size: 1379
     - path: src/ml_training/config.py
       hash: md5
-      md5: cea151ba9c7cd902d42724a6a8c1e4f1
-      size: 539
+      md5: 8b90ca320d1845604ac8939a9f268cbe
+      size: 1684
     - path: src/ml_training/evaluate.py
       hash: md5
       md5: 206fa518ca55dd8173028dfed0a974f2
       size: 4394
+    params:
+      params.yaml:
+        evaluate:
+          primary: roc_auc
+          primary_direction: maximize
+        train.seed: 42
     outs:
     - path: metrics/train_metrics.json
       hash: md5

@@ -1,0 +1,16 @@
+prepare:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+train:
+  seed: 42
+  model:
+    type: logistic_regression
+    params:
+      max_iter: 1000
+      C: 1.0
+
+evaluate:
+  primary: roc_auc
+  primary_direction: maximize

@@ -6,6 +6,8 @@ stages:
       - src/ml_training/config.py
       - configs/default.yaml
       - data/raw/transactions.csv
+    params:
+      - prepare
     outs:
       - data/processed/train.csv
       - data/processed/val.csv
@@ -17,6 +19,8 @@ stages:
       - src/ml_training/config.py
       - configs/default.yaml
       - data/processed/train.csv
+    params:
+      - train
     outs:
       - models/model.joblib
 
@@ -28,6 +32,9 @@ stages:
       - configs/default.yaml
       - models/model.joblib
       - data/processed/val.csv
+    params:
+      - evaluate
+      - train.seed
     metrics:
       - metrics/train_metrics.json:
           cache: false

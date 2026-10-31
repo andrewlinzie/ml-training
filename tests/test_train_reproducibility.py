@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pandas as pd
-import yaml
 
 from ml_training.prepare import prepare_from_config
 from ml_training.train import train_from_config
@@ -74,6 +73,18 @@ def test_load_config_roundtrip(tmp_path: Path) -> None:
     from ml_training.config import load_config
 
     cfg_path = tmp_path / "cfg.yaml"
-    cfg_path.write_text(yaml.safe_dump({"seed": 7, "task": {"target": "is_fraud"}}))
-    loaded = load_config(cfg_path)
+    params_path = tmp_path / "params.yaml"
+    cfg_path.write_text(
+        "task:\n  name: transaction_fraud\n  target: is_fraud\n"
+        "metrics:\n  report_path: metrics/train_metrics.json\n"
+    )
+    params_path.write_text(
+        "prepare:\n  test_size: 0.2\n  random_state: 42\n  stratify: true\n"
+        "train:\n  seed: 7\n  model:\n    type: logistic_regression\n"
+        "    params:\n      max_iter: 100\n      C: 1.0\n"
+        "evaluate:\n  primary: roc_auc\n  primary_direction: maximize\n"
+    )
+    loaded = load_config(cfg_path, params_path=params_path)
     assert loaded["seed"] == 7
+    assert loaded["split"]["test_size"] == 0.2
+    assert loaded["metrics"]["primary"] == "roc_auc"
