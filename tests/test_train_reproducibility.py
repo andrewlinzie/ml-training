@@ -23,14 +23,9 @@ def _write_tiny_dataset(path: Path) -> None:
     pd.DataFrame(rows).to_csv(path, index=False)
 
 
-def test_same_seed_same_metrics(tmp_path: Path) -> None:
-    data_path = tmp_path / "tiny.csv"
-    model_a = tmp_path / "model_a.joblib"
-    model_b = tmp_path / "model_b.joblib"
-    _write_tiny_dataset(data_path)
-
-    base = {
-        "task": {"target": "is_fraud"},
+def _base_config(data_path: Path, model_path: Path, metrics_path: Path) -> dict:
+    return {
+        "task": {"name": "transaction_fraud", "target": "is_fraud"},
         "data": {"raw_path": str(data_path)},
         "features": [
             "amount",
@@ -46,17 +41,31 @@ def test_same_seed_same_metrics(tmp_path: Path) -> None:
             "type": "logistic_regression",
             "params": {"max_iter": 1000, "C": 1.0},
         },
+        "metrics": {
+            "primary": "roc_auc",
+            "primary_direction": "maximize",
+            "report_path": str(metrics_path),
+        },
+        "paths": {"model_path": str(model_path)},
     }
 
-    config_a = {**base, "paths": {"model_path": str(model_a)}}
-    config_b = {**base, "paths": {"model_path": str(model_b)}}
 
-    metrics_a = train_from_config(config_a)
-    metrics_b = train_from_config(config_b)
+def test_same_seed_same_metrics(tmp_path: Path) -> None:
+    data_path = tmp_path / "tiny.csv"
+    model_a = tmp_path / "model_a.joblib"
+    model_b = tmp_path / "model_b.joblib"
+    metrics_a = tmp_path / "metrics_a.json"
+    metrics_b = tmp_path / "metrics_b.json"
+    _write_tiny_dataset(data_path)
 
-    assert metrics_a == metrics_b
+    report_a = train_from_config(_base_config(data_path, model_a, metrics_a))
+    report_b = train_from_config(_base_config(data_path, model_b, metrics_b))
+
+    assert report_a["metrics"] == report_b["metrics"]
     assert model_a.is_file()
     assert model_b.is_file()
+    assert metrics_a.is_file()
+    assert metrics_b.is_file()
 
 
 def test_load_config_roundtrip(tmp_path: Path) -> None:

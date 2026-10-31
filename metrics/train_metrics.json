@@ -1,0 +1,13 @@
+{
+  "metrics": {
+    "f1": 0.9053254437869822,
+    "precision": 0.8547486033519553,
+    "recall": 0.9622641509433962,
+    "roc_auc": 0.8480595183310323
+  },
+  "n_samples": 400,
+  "primary_direction": "maximize",
+  "primary_metric": "roc_auc",
+  "split": "validation",
+  "task": "transaction_fraud"
+}

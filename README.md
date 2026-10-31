@@ -48,6 +48,17 @@ Training produces a versioned artifact; serving only consumes a pinned version (
 
 Raw data path: `data/raw/transactions.csv` (gitignored; DVC-tracked later).
 
+## Champion metric (Phase B preview)
+
+| Field | Value |
+|---|---|
+| Primary metric | `roc_auc` |
+| Direction | maximize |
+| Why | Threshold-free ranking quality; better default than accuracy on imbalanced labels |
+| Secondary | `precision`, `recall`, `f1` (also written to the metrics report) |
+
+Report path: `metrics/train_metrics.json`
+
 ## Local setup
 
 ```bash

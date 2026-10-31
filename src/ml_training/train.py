@@ -11,10 +11,15 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
 from ml_training.config import load_config
+from ml_training.evaluate import (
+    build_metrics_report,
+    compute_classification_metrics,
+    format_metrics_summary,
+    write_metrics_report,
+)
 
 
 def set_seeds(seed: int) -> None:
@@ -32,7 +37,7 @@ def build_model(model_cfg: dict[str, Any], seed: int) -> LogisticRegression:
     return LogisticRegression(random_state=seed, **params)
 
 
-def train_from_config(config: dict[str, Any]) -> dict[str, float]:
+def train_from_config(config: dict[str, Any]) -> dict[str, Any]:
     seed = int(config["seed"])
     set_seeds(seed)
 
@@ -41,6 +46,7 @@ def train_from_config(config: dict[str, Any]) -> dict[str, float]:
     target = config["task"]["target"]
     split_cfg = config["split"]
     model_path = Path(config["paths"]["model_path"])
+    metrics_cfg = config["metrics"]
 
     df = pd.read_csv(raw_path)
     missing = [c for c in features + [target] if c not in df.columns]
@@ -64,11 +70,16 @@ def train_from_config(config: dict[str, Any]) -> dict[str, float]:
 
     y_pred = model.predict(x_val)
     y_prob = model.predict_proba(x_val)[:, 1]
+    metrics = compute_classification_metrics(y_val, y_pred, y_prob)
 
-    metrics = {
-        "roc_auc": float(roc_auc_score(y_val, y_prob)),
-        "f1": float(f1_score(y_val, y_pred)),
-    }
+    report = build_metrics_report(
+        metrics=metrics,
+        primary=str(metrics_cfg["primary"]),
+        primary_direction=str(metrics_cfg["primary_direction"]),
+        task_name=str(config["task"]["name"]),
+        n_val=len(y_val),
+    )
+    report_path = write_metrics_report(report, metrics_cfg["report_path"])
 
     model_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(
@@ -78,11 +89,12 @@ def train_from_config(config: dict[str, Any]) -> dict[str, float]:
             "target": target,
             "seed": seed,
             "metrics": metrics,
+            "metrics_report_path": str(report_path),
         },
         model_path,
     )
 
-    return metrics
+    return report
 
 
 def main() -> None:
@@ -95,10 +107,11 @@ def main() -> None:
     args = parser.parse_args()
 
     config = load_config(args.config)
-    metrics = train_from_config(config)
+    report = train_from_config(config)
 
     print(f"Wrote model to {config['paths']['model_path']}")
-    print(f"Validation metrics: {metrics}")
+    print(f"Wrote metrics to {config['metrics']['report_path']}")
+    print(format_metrics_summary(report))
 
 
 if __name__ == "__main__":
