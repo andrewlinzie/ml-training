@@ -32,6 +32,22 @@ It is not responsible for:
 
 Training produces a versioned artifact; serving only consumes a pinned version (Git/DVC/MLflow pointer)—never an untracked mutable `latest`.
 
+## Learning task
+
+**Question:** Is this transaction fraudulent?
+
+| Field | Value |
+|---|---|
+| Task | Transaction fraud detection |
+| Problem type | Binary classification |
+| Target | `is_fraud` (0 = legit, 1 = fraud) |
+| Features | `amount`, `hour_of_day`, `day_of_week`, `merchant_risk`, `device_trust`, `is_international` |
+| Data source | Synthetic generator (`scripts/generate_raw_dataset.py`) |
+| License | Generated in-repo; no third-party dataset license |
+| Split policy | 80/20 train/validation, stratified by `is_fraud`, `random_state=42` |
+
+Raw data path: `data/raw/transactions.csv` (gitignored; DVC-tracked later).
+
 ## Local setup
 
 ```bash

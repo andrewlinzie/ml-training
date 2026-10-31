@@ -1,0 +1,25 @@
+task:
+  name: transaction_fraud
+  target: is_fraud
+  problem_type: binary_classification
+
+data:
+  raw_path: data/raw/transactions.csv
+  processed_dir: data/processed
+
+features:
+  - amount
+  - hour_of_day
+  - day_of_week
+  - merchant_risk
+  - device_trust
+  - is_international
+
+split:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+# Training knobs come in A4
+model:
+  type: placeholder
