@@ -1,0 +1,5 @@
+[core]
+    remote = s3remote
+['remote "s3remote"']
+    url = s3://ai-cloud-platform-899631475351-dvc/dvc
+    region = us-east-2
