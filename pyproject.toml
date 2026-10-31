@@ -7,6 +7,8 @@ dependencies = [
   "pandas>=2.2",
   "pyyaml>=6.0",
   "scikit-learn>=1.4",
+  "dvc>=3.50",
+  "dvc-s3>=3.0",
 ]
 
 [project.optional-dependencies]

@@ -7,10 +7,15 @@ dist/
 build/
 .DS_Store
 
-# data/models stay local until DVC (A7+)
+# data/models stay local until DVC tracks them
 data/raw/*
 !data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
 models/*
 !models/.gitkeep
+
+# DVC local caches / temp (never commit)
+.dvc/cache
+.dvc/tmp
+.dvc/config.local
