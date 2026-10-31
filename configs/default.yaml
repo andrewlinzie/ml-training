@@ -35,3 +35,4 @@ metrics:
 
 paths:
   model_path: models/model.joblib
+  package_dir: models/packaged/fraud_classifier

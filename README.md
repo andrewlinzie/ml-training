@@ -48,16 +48,30 @@ Training produces a versioned artifact; serving only consumes a pinned version (
 
 Raw data path: `data/raw/transactions.csv` (gitignored; DVC-tracked later).
 
-## Champion metric (Phase B preview)
+## Champion metric
 
 | Field | Value |
 |---|---|
 | Primary metric | `roc_auc` |
 | Direction | maximize |
 | Why | Threshold-free ranking quality; better default than accuracy on imbalanced labels |
-| Secondary | `precision`, `recall`, `f1` (also written to the metrics report) |
+| Secondary | `precision`, `recall`, `f1` |
 
 Report path: `metrics/train_metrics.json`
+
+## Model artifact contract
+
+Package directory: `models/packaged/fraud_classifier/`
+
+| File | Purpose |
+|---|---|
+| `model.joblib` | Fitted sklearn model |
+| `metadata.json` | `model_version`, seed, config hash, primary metric |
+| `feature_schema.json` | Feature names + order for inference |
+| `metrics.json` | Validation metrics snapshot |
+| `config_snapshot.yaml` | Exact config used for the run |
+
+`model_version` is never `stub-v1`.
 
 ## Local setup
 
