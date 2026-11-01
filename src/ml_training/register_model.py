@@ -25,6 +25,15 @@ def champion_uri(registered_name: str) -> str:
     return f"models:/{registered_name}@{CHAMPION_ALIAS}"
 
 
+def earns_champion(current_roc_auc: float, challenger_roc_auc: float) -> bool:
+    """True when the challenger strictly beats the champion on roc_auc.
+
+    This is the metric gate only. A person still has to run a promotion.
+    An equal score does not earn the alias.
+    """
+    return float(challenger_roc_auc) > float(current_roc_auc)
+
+
 def registry_record_path(config: dict[str, Any]) -> Path:
     return run_record_path(config).parent / "mlflow_registry.json"
 
@@ -100,7 +109,7 @@ def register_from_config(config: dict[str, Any]) -> dict[str, Any]:
     if current is not None:
         raise RuntimeError(
             f"{champion_uri(registered_name)} already points at registry version {current}. "
-            "This command does not move it."
+            "This command does not move it. See CHAMPION.md."
         )
 
     model = package["model"]

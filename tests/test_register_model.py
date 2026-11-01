@@ -5,12 +5,20 @@ import pytest
 from ml_training.register_model import (
     build_registry_record,
     champion_uri,
+    earns_champion,
     existing_alias_version,
 )
 
 
 def test_champion_uri() -> None:
     assert champion_uri("transaction_fraud") == "models:/transaction_fraud@champion"
+
+
+def test_challenger_must_strictly_beat_roc_auc() -> None:
+    current = 0.8480595183310323
+    assert earns_champion(current, current + 0.01)
+    assert not earns_champion(current, current)
+    assert not earns_champion(current, current - 0.01)
 
 
 def test_registry_record_keeps_both_versions() -> None:
