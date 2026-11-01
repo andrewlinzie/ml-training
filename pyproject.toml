@@ -9,6 +9,7 @@ dependencies = [
   "scikit-learn>=1.4",
   "dvc>=3.50",
   "dvc-s3>=3.0",
+  "mlflow==3.16.0",
 ]
 
 [project.optional-dependencies]

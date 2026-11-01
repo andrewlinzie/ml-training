@@ -38,3 +38,20 @@ stages:
     metrics:
       - metrics/train_metrics.json:
           cache: false
+
+  log:
+    cmd: python -m ml_training.log_run --config configs/default.yaml
+    deps:
+      - src/ml_training/log_run.py
+      - src/ml_training/config.py
+      - src/ml_training/package_model.py
+      - configs/default.yaml
+      - metrics/train_metrics.json
+      - models/packaged/fraud_classifier
+    params:
+      - prepare
+      - train
+      - evaluate
+    outs:
+      - metrics/mlflow_run.json:
+          cache: false

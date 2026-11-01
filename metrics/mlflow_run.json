@@ -1,0 +1,10 @@
+{
+  "artifact_subdir": "fraud_classifier",
+  "experiment_id": "1",
+  "experiment_name": "transaction_fraud",
+  "model_version": "fraud-logreg-s42-5f3c0fdb-auc0p848060",
+  "primary_metric": "roc_auc",
+  "primary_metric_value": 0.8480595183310323,
+  "run_id": "5cfb5967397d4a5daf3fdccb4b1245aa",
+  "tracking_uri": "http://k8s-mlflow-mlflow-a946d2ad60-938361161.us-east-2.elb.amazonaws.com"
+}

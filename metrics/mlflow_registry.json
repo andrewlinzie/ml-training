@@ -1,0 +1,10 @@
+{
+  "alias": "champion",
+  "model_uri": "models:/transaction_fraud@champion",
+  "model_version": "fraud-logreg-s42-5f3c0fdb-auc0p848060",
+  "primary_metric": "roc_auc",
+  "primary_metric_value": 0.8480595183310323,
+  "registered_name": "transaction_fraud",
+  "registry_version": "1",
+  "run_id": "5cfb5967397d4a5daf3fdccb4b1245aa"
+}

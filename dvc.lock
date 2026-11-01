@@ -101,3 +101,52 @@ stages:
       hash: md5
       md5: 9d0e2c57086fa6fae3d1264eccb57b10
       size: 300
+  log:
+    cmd: python -m ml_training.log_run --config configs/default.yaml
+    deps:
+    - path: configs/default.yaml
+      hash: md5
+      md5: 5b8c858da1f274be0a99733fc128cc81
+      size: 491
+    - path: metrics/train_metrics.json
+      hash: md5
+      md5: 9d0e2c57086fa6fae3d1264eccb57b10
+      size: 300
+    - path: models/packaged/fraud_classifier
+      hash: md5
+      md5: a5a0b72718701c9aa8d51b83abccf536.dir
+      size: 3331
+      nfiles: 5
+    - path: src/ml_training/config.py
+      hash: md5
+      md5: 8b90ca320d1845604ac8939a9f268cbe
+      size: 1684
+    - path: src/ml_training/log_run.py
+      hash: md5
+      md5: 7ccc301d105bd18e8864c761e7f35ffc
+      size: 6196
+    - path: src/ml_training/package_model.py
+      hash: md5
+      md5: c52d7d7a368357fa1a1f1389c486421c
+      size: 5506
+    params:
+      params.yaml:
+        evaluate:
+          primary: roc_auc
+          primary_direction: maximize
+        prepare:
+          test_size: 0.2
+          random_state: 42
+          stratify: true
+        train:
+          seed: 42
+          model:
+            type: logistic_regression
+            params:
+              max_iter: 1000
+              C: 1.0
+    outs:
+    - path: metrics/mlflow_run.json
+      hash: md5
+      md5: 45b95f7f719172ad600b63e72cb327cf
+      size: 390
